@@ -1,0 +1,82 @@
+tasks:
+    setup:
+        name: Project Setup
+        description: Install dependencies and setup development environment
+        command: |
+            pnpm install
+            pnpm run build
+        triggeredBy:
+            - postDevcontainerStart
+            - manual
+
+    lint:
+        name: Lint Code
+        description: Run ESLint and Prettier checks
+        command: |
+            pnpm run lint
+        triggeredBy:
+            - manual
+
+    test:
+        name: Run Tests
+        description: Execute project tests
+        command: |
+            pnpm run test
+        triggeredBy:
+            - manual
+
+    dev:
+        name: Development Server
+        description: Start the development server
+        command: |
+            pnpm run dev
+        triggeredBy:
+            - manual
+
+services:
+    dev-server:
+        name: Development Server
+        description: Runs the development server for the application
+        commands:
+            start: |
+                echo "Starting development server..."
+                pnpm run dev
+            ready: |
+                # Check if the dev server is responding
+                curl -s http://localhost:3000 > /dev/null
+                if [ $? -eq 0 ]; then
+                    echo "Development server is ready"
+                    exit 0
+                else
+                    echo "Development server is not ready"
+                    exit 1
+                fi
+            stop: |
+                echo "Stopping development server..."
+                pkill -f "vite"
+        triggeredBy:
+            - postDevcontainerStart
+
+    type-check:
+        name: TypeScript Watch
+        description: Runs TypeScript type checking in watch mode
+        commands:
+            start: |
+                echo "Starting TypeScript watch mode..."
+                pnpm run typecheck --watch
+            ready: |
+                # Check if TypeScript is running
+                pgrep -f "tsc --watch" > /dev/null
+                if [ $? -eq 0 ]; then
+                    echo "TypeScript watch is ready"
+                    exit 0
+                else
+                    echo "TypeScript watch is not ready"
+                    exit 1
+                fi
+            stop: |
+                echo "Stopping TypeScript watch..."
+                pkill -f "tsc --watch"
+        triggeredBy:
+            - postDevcontainerStart
+

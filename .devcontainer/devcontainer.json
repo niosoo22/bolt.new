@@ -57,5 +57,12 @@
 
 	"remoteEnv": {
 		"NODE_ENV": "development"
-	}
+	},
+
+	"workspaceMount": {
+		"source": "${localWorkspaceFolder}",
+		"target": "/workspace",
+		"type": "bind"
+	},
+	"workspaceFolder": "/workspace"
 }
